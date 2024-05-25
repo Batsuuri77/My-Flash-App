@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline';script-src 'self' 'unsafe-inline' 'unsafe-eval'"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="themes/myTheme.css" />
+	<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css"/>
+	<link rel="stylesheet" type="text/css" href="./css/style.css">
+	<link rel="stylesheet" href="./js/jquery.mobile-1.4.5.css" />
+	<script src="./js/jquery.js"></script>
+	<script src="./js/jquery.mobile-1.4.5.js"></script>
+	<script src="./js/jquery.validate.min.js"></script>
+	<script src="./js/jQueryValidation.js"></script>
+	<script src="cordova.js"></script>
+	<script type="text/javascript" src="js/Calendar.js"></script>uibutton
+
+	<script src="./js/index.js"></script>
+	<title>My-Flash-Card</title>
+</head>
+
+<body>
+	<!----------------Login Page--------------------------------->
+	<div data-role="page" id="loginPage">
+   <!------------------------Header---------------------------->
+		<div data-role="header" class="header" data-theme="d" data-position="fixed">
+			<h1>My-Flash-Card</h1>
+		</div>
+	<!------------------------Main content---------------------------->
+		<div data-role="content">
+			<div class="wrap login">
+				<div><img src="img/Logo.png" width="100%"></div>
+				<form id="loginForm" method="get" action="">
+					<div>
+						<label for="email" class="ui-mobile-white">Username</label>
+						<input type="email" name="email" placeholder="Enter your Email" />
+					</div>
+					<div>
+						<label for="email">Password</label>
+						<input type="password" name="password" placeholder="Enter the Password" />
+					</div>
+
+					<div>
+						<a href="#" id="loginButton" class="ui-btn ui-shadow ui-corner-all ui-btn-d">Login</a>
+					</div>
+					<div>
+						<a href="#signupPage"  rel="external" class="ui-btn ui-shadow ui-corner-all ui-btn-d">Sign up</a>
+					</div>
+				</form>
+			</div>
+		</div>	
+		<!--footer-->
+		<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
+			<p>Copyright © My-Flash-Card 2024</p>
+		</div>
+	</div>
+
+	<!------------------------Register Page------------------------------>
+	
+
+ <!--Sign up Page-->
+<div data-role="page" id="signupPage">
+    <!--Header-->
+    <div data-role="header" class="header" data-theme="d" data-position="fixed">
+        <h1>Sign up to My-Flash-App</h1>
+    </div>
+    <!--Main content-->
+    <div data-role="content">
+        <div class="wrap login">
+            <form id="signupForm" method="get" action="">
+                <div>
+                    <input type="email" name="email" id="email" placeholder="Enter your Email" required />
+                </div>
+                <div>
+                    <input type="password" name="password" id="password" placeholder="Enter a Password" required />
+                </div>
+                <div>
+                    <input type="text" name="firstName" id="firstName" placeholder="First Name" required />
+                </div>
+                <div>
+                    <input type="text" name="lastName" id="lastName" placeholder="Last Name" required />
+                </div>
+                <div>
+                    <select name="state" id="state" required>
+                        <option value="">Select State</option>
+                        <option value="ACT">ACT</option>
+                        <option value="VIC">VIC</option>
+                        <option value="NSW">NSW</option>
+                        <option value="QLD">QLD</option>
+                        <option value="SA">SA</option>
+                        <option value="TAS">TAS</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="text" name="phoneNumber" id="phoneNumber" placeholder="Phone Number" required />
+                </div>
+                <div>
+                    <input type="text" name="address" id="address" placeholder="Address" required />
+                </div>
+                <div>
+                    <input type="text" name="postcode" id="postcode" placeholder="Postcode" required />
+                </div>
+
+                <div>
+                    <button type="submit" id="signupButton" class="ui-btn ui-shadow ui-corner-all ui-btn-d">Sign up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--Footer-->
+    <div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
+        <p>&copy; Copyright © My-Flash-Card 2024</p>
+    </div>
+</div>
+	<div id="mySidenav" class="sidenav">
+		<a href="#" onclick="closeNav()">Close Menu</a>
+		<a href="#userProfilePage" onclick="closeNav()">Profile</a>
+		<a href="#flashcardPage" onclick="closeNav()">My-Flash-Cards</a>
+		<a href="#contactPage" onclick="closeNav()">Contact</a>
+		<a href="#loginPage" onclick="closeNav()">Logout</a>
+	 </div>
+
+<!------------------------Home page---------------------------->
+<div data-role="page" id="userProfilePage">
+	<!-- Header -->
+	<div data-role="header" class="header" data-theme="d" data-position="fixed">
+		<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
+		<h1>Profile</h1>
+		<a href="#homePage" class="ui-btn ui-btn-icon-left ui-icon-home ui-btn-icon-notext ui-corner-all">home</a>
+	</div>
+	<!-- Main content -->
+	<div data-role="content" id="content">
+		<div class="wrap1">
+			<div id="profileInfo" class="profile-info">
+				<div><label>Email:  <span id="profileEmail"></span> </label></div>
+				<div><label>Name:  <span id="profileName"></span> </label></div>
+				<div><label>Mobile Number: <span id="profileMobileNumber"></span></label> </div>
+				<div><label>Address: <span id="profileAddress"></span></label> </span></div>
+			</div>
+			<button onclick="toggleEditProfile()">Edit Profile</button>
+			<button onclick="deleteAccount()">Delete Account</button>
+		 </div>
+	 </div>
+	<!-- Footer -->
+	<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
+		<p>Copyright © My-Flash-Card 2024</p>
+	</div>
+</div>
+<div data-role="page" id="editProfilePage">
+	<!-- Header -->
+	<div data-role="header" class="header" data-theme="d" data-position="fixed">
+		<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
+		<h1>Profile</h1>
+		<a href="#homePage" class="ui-btn ui-btn-icon-left ui-icon-home ui-btn-icon-notext ui-corner-all">home</a>
+	</div>
+	<!-- Main content -->
+	<div data-role="content" id="content">
+		<div class="wrap2">
+		   <form id="editProfileForm">
+			<label for="editEmail">Email:</label>
+            <input type="mail" id="editEmail" name="editEmail" required>
+            <label for="editFirstName">First Name:</label>
+            <input type="text" id="editFirstName" name="editFirstName" required>
+            <label for="editLastName">Last Name:</label>
+            <input type="text" id="editLastName" name="editLastName" required>
+            <label for="editPassword">Password:</label>
+            <input type="password" id="editPassword" name="editPassword" required>
+            <label for="editMobileNumber">Mobile Number:</label>
+            <input type="text" id="editMobileNumber" name="editMobileNumber" required>
+            <label for="editAddress">Address:</label>
+            <input type="text" id="editAddress" name="editAddress" required>
+            <label for="editPostcode">Postcode</label>
+			<input type="int" id="editPostcode" name="editPostcode" required><br>
+            <button type="submit">Save Profile</button>
+            </form>
+            <button onclick="toggleProfileView()">Cancel</button>
+        </div>
+	 </div>
+	<!-- Footer -->
+	<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
+		<p>Copyright © My-Flash-Card 2024</p>
+	</div>
+</div>
+
+
+
+<div data-role="page" id="contactPage">
+	<!-- Header -->
+	<div data-role="header" class="header" data-theme="d" data-position="fixed">
+		<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
+		<h1>Contact Us</h1>
+		<a href="#homePage" class="ui-btn ui-btn-icon-left ui-icon-home ui-btn-icon-notext ui-corner-all">home</a>
+	</div>
+	<!-- Main content -->
+	<div data-role="content" id="content">
+		<div class="wrap">
+	    </div>
+	</div>
+	<!-- Footer -->
+	<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
+		<p>Copyright © My-Flash-Card 2024</p>
+	</div>
+</div>
+</body>
+
+
+
+
+
+
+<!------------------------Home page---------------------------->
+<div data-role="page" id="homePage">
+    <!------------------------Header---------------------------->
+		<div data-role="header" class="header" data-theme="d" data-position="fixed">
+			<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
+			<h1>My-Flash-Card</h1>
+		</div>
+    <!------------------------Main content---------------------------->
+	<form id="flashcardForm" class="container">
+		<label for="question">Question:</label><br>
+		<input type="text" id="question" name="question" required><br>
+		<label for="answer">Answer:</label><br>
+		<input type="text" id="answer" name="answer" required><br><br>
+		<button type="submit">Save Flashcard</button>
+	</form>
+	<button onclick="toggleView()">View Flashcards</button>
+</div>
+		<!--footer-->
+		<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
+			<p>Copyright © My-Flash-Card 2024</p>
+		</div>
+    </div>
+
+
+	<div data-role="page" id="flashcardPage">
+		<!-- Header -->
+		<div data-role="header" class="header" data-theme="d" data-position="fixed">
+			<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
+			<h1>My Cards</h1>
+			<a href="#homePage" class="ui-btn ui-btn-icon-left ui-icon-home ui-btn-icon-notext ui-corner-all">home</a>
+		</div>
+		<!-- Main content -->
+		<div id="flashcardContainer" class="flashcard-container"></div>
+        <div class="navigation">
+				<img src="img/backward.png" class="b1" onclick="previousCard()">
+				<img src="img/edit.png" class="e1" onclick="editFlashcard()">
+				<img src="img/delete.png" class="d1" onclick="deleteFlashcard()">
+				<img src="img/forward.png" class="f1" onclick="nextCard()">
+    </div>
+		<!-- Footer -->
+		<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
+			<p>Copyright © My-Flash-Card 2024</p>
+		</div>
+	</div>
+	
+
+</html>
