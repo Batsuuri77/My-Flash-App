@@ -30,10 +30,23 @@ form div{margin-top:20px;position:relative}
   }
 
    
-.wrap{margin: 10px auto;max-width:414px;max-height:800px;overflow-x:hidden;border-radius:25px;background:#454444;}
-.wrap1{margin: 10px auto;max-width:750px;max-height:500px;overflow-x:hidden;border-radius:25px;background:#454444;}
+.wrap{margin: 10px auto;max-width:414px;max-height:800px;overflow-x:hidden;border-radius:25px;background:#ffffff;}
+.wrap1{margin: 10px auto;max-width:750px;max-height:500px;overflow-x:hidden;border-radius:25px;background:#ffffff;}
 	.wrap2{margin: 10px auto;max-width:800px;max-height:1100px;overflow-x:hidden;border-radius:10px;background:#f9fafa;
 	}
+
+.wrap.login {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	text-align: center;
+}
+.wrap.login img {
+	max-width: 70%;
+	margin-bottom: 20px;
+}
 .pb{padding-bottom:60px}
 
 .fb1{
@@ -43,8 +56,8 @@ form div{margin-top:20px;position:relative}
 	margin-left: 40%;
 }
 /*Log in*/
-.login form{width:80%;margin:30px auto}
-.login form div input{width:100%;height:40px;line-height:44px;border:none;border-bottom:1px solid #33ccff;background:none;outline:none;box-shadow: none}
+.login form{width:80%;margin:5px auto}
+.login form div input{width:100%;height:40px;line-height:20px;border:none;border-bottom:1px solid #aaaaaa;background:none;outline:none;box-shadow: none}
 .login form div.button{background:#454444;margin-top:20px;}
 
 
@@ -225,10 +238,10 @@ button {
 	user-select: none;
 }
 
-#loginForm label[for="email"] {
-    color: #ffffff;
-}
-
-#loginForm label[for="password"] {
-    color: #ffffff;
+#loginForm label, #signupForm label {
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	justify-content: start;
+	color: #333333;
 }
