@@ -1690,7 +1690,6 @@ button.ui-btn-icon-notext,
 .ui-mobile label,
 .ui-controlgroup-label {
 	display: block;
-	margin: 0 0 .4em;
 }
 /* Accessible content hiding */
 /* ui-hide-label deprecated in 1.4. TODO: Remove in 1.5 */

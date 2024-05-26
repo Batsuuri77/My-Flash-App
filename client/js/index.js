@@ -219,207 +219,230 @@ $(document).ready(function () {
             }
         }
     });
+
+    let flashcards = JSON.parse(localStorage.getItem("flashcards")) || [];
+    let currentCardIndex = 0;
+    let isViewingCards = false;
+
+    document.getElementById("flashcardForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const question = document.getElementById("question").value;
+        const answer = document.getElementById("answer").value;
+        if (question.trim() !== "" && answer.trim() !== "") {
+            flashcards.push({ question, answer });
+            localStorage.setItem("flashcards", JSON.stringify(flashcards));
+            document.getElementById("question").value = "";
+            document.getElementById("answer").value = "";
+            alert("Flashcard saved successfully!");
+        } else {
+            alert("Please enter both question and answer.");
+        }
+    });
+
+    function displayFlashcard(index) {
+        const flashcardContainer = document.getElementById("flashcardContainer");
+        flashcardContainer.innerHTML = "";
+        if (flashcards.length > 0) {
+            const flashcard = flashcards[index];
+            const card = document.createElement("div");
+            card.classList.add("flashcard");
+
+            const front = document.createElement("div");
+            front.classList.add("flashcard-face", "flashcard-front");
+            front.textContent = flashcard.question;
+
+            const back = document.createElement("div");
+            back.classList.add("flashcard-face", "flashcard-back");
+            back.textContent = flashcard.answer;
+
+            card.appendChild(front);
+            card.appendChild(back);
+
+            card.addEventListener("click", () => {
+                card.classList.toggle("is-flipped");
+            });
+
+            flashcardContainer.appendChild(card);
+        } else {
+            flashcardContainer.textContent = "No flashcards available.";
+        }
+    }
+
+
+    $(document).on("pagecontainershow", function (event, ui) {
+        console.log("Page containers show event triggered.");
+        var page = ui.toPage[0].id;
+        if (page === "userProfilePage") {
+            console.log("Navigated to userProfilePage");
+            $.get("http://localhost:3000/getCurrentUser", function (data) {
+                console.log("getCurrentUser API response:", data);
+                data = JSON.parse(data);
+                $("#profileInfo").empty();
+                if (!data) {
+                    $("#profileInfo").append("<br><p>No user information available</p><br>");
+                } else {
+                    $("#profileInfo").append("<table class='profile-table'><tbody>");
+                    $("#profileInfo").append("<tr><td><b><span class=\"textcolor\">" + data.firstName + " " + data.lastName + "</span></b></td></tr>");
+                    $("#profileInfo").append("<tr><td><span class=\"textcolor\">" + data.email + "</span></td></tr>");
+                    $("#profileInfo").append("<tr><td><span class=\"textcolor\">" + data.phoneNumber + "</span></td></tr>");
+                    $("#profileInfo").append("<tr><td><span class=\"textcolor\">" + data.address + " " + data.state + " " + data.postcode + "</span></td></tr>");
+                    $("#profileInfo").append("</tbody></table><br>"); 
+                }
+                $("#profileInfo").trigger("create");
+            }).fail(function (xhr, status, error) {
+                console.error("Error fetching getCurrentUser:", error);
+            });
+        }
+    });
+
+    $("#saveProfileButton").on("click", function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        var updatedUser = {
+            firstName: $("#editFirstName").val(),
+            lastName: $("#editLastName").val(),
+            email: $("#editEmail").val(),
+            phoneNumber: $("#editPhonenumber").val(),
+            address: $("#editAddress").val(),
+            state: $("#state").val(),
+            postcode: $("#editPostcode").val(),
+            password: $("#editPassword").val()
+        };  
+        $.ajax({
+            url: "http://localhost:3000/updateUser",
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(updatedUser),
+            success: function(response) {
+                console.log("User updated successfully:", response);
+                // Redirect to the profile page or show a success message
+                // For example:
+                window.location.href = "#userProfilePage";
+            },
+            error: function(xhr, status, error) {
+                console.error("Error updating user:", error);
+                // Show an error message
+                alert("There was an error updating your profile. Please try again.");
+            }
+        });
+    });
+
+    $(document).on("pagecontainershow", function(event, ui) {
+        console.log("Page containers show event triggered.");
+        var page = ui.toPage[0].id;
+        if (page === "editProfilePage") {
+            console.log("Navigated to editProfilePage");
+            $.get("http://localhost:3000/getCurrentUser", function(data) {
+                console.log("getCurrentUser API response:", data);
+                data = JSON.parse(data);
+                $("#editProfile").empty();
+                if (!data) {
+                    $("#editProfile").append("<br><p>No user information available</p><br>");
+                } else {
+                    $("#editProfile").append("<form id='editProfileForm' class='editProfile form wrap'>");
+                    $("#editProfileForm").append("<label for='editFirstName'>First Name</label>");
+                    $("#editProfileForm").append("<input type='text' id='editFirstName' name='editFirstName' value='" + data.firstName + "' required>");
+                    $("#editProfileForm").append("<label for='editLastName'>Last Name</label>");
+                    $("#editProfileForm").append("<input type='text' id='editLastName' name='editLastName' value='" + data.lastName + "' required>");
+                    $("#editProfileForm").append("<label for='editEmail'>Email</label>");
+                    $("#editProfileForm").append("<input type='email' id='editEmail' name='editEmail' value='" + data.email + "' required>");
+                    $("#editProfileForm").append("<label for='editPhonenumber'>Phone Number</label>");
+                    $("#editProfileForm").append("<input type='text' id='editPhonenumber' name='editPhonenumber' value='" + data.phoneNumber + "' required>");
+                    $("#editProfileForm").append("<label for='editAddress'>Address</label>");
+                    $("#editProfileForm").append("<input type='text' id='editAddress' name='editAddress' value='" + data.address + "' required>");
+                    $("#editProfileForm").append("<label for='editState'>State</label>");
+                    $("#editProfileForm").append(`<select name="state" id="state" required>
+                        <option value="">Select State</option>
+                        <option value="ACT" ${data.state === "ACT" ? "selected" : ""}>ACT</option>
+                        <option value="VIC" ${data.state === "VIC" ? "selected" : ""}>VIC</option>
+                        <option value="NSW" ${data.state === "NSW" ? "selected" : ""}>NSW</option>
+                        <option value="QLD" ${data.state === "QLD" ? "selected" : ""}>QLD</option>
+                        <option value="SA" ${data.state === "SA" ? "selected" : ""}>SA</option>
+                        <option value="TAS" ${data.state === "TAS" ? "selected" : ""}>TAS</option>
+                    </select>`);
+                    $("#editProfileForm").append("<label for='editPostcode'>Postcode</label>");
+                    $("#editProfileForm").append("<input type='text' id='editPostcode' name='editPostcode' value='" + data.postcode + "' required>");
+                    $("#editProfileForm").append("<label for='editPassword'>Password</label>");
+                    $("#editProfileForm").append("<input type='password' id='editPassword' name='editPassword' value='" + data.password + "' required>");
+                    
+                    $("#editProfile").append("</form><br>"); 
+                }
+                $("#editProfile").trigger("create");
+            }).fail(function(xhr, status, error) {
+                console.error("Error fetching getCurrentUser:", error);
+            });
+        }
+    });
 });
 
+
 function openNav() {
-  document.getElementById("mySidenav").style.width = "250px";
+document.getElementById("mySidenav").style.width = "250px";
 }
 
 function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";
+document.getElementById("mySidenav").style.width = "0";
 }
 
-let flashcards = JSON.parse(localStorage.getItem("flashcards")) || [];
-let currentCardIndex = 0;
-let isViewingCards = false;
-
-document.getElementById("flashcardForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    const question = document.getElementById("question").value;
-    const answer = document.getElementById("answer").value;
-    if (question.trim() !== "" && answer.trim() !== "") {
-        flashcards.push({ question, answer });
-        localStorage.setItem("flashcards", JSON.stringify(flashcards));
-        document.getElementById("question").value = "";
-        document.getElementById("answer").value = "";
-        alert("Flashcard saved successfully!");
-    } else {
-        alert("Please enter both question and answer.");
-    }
-});
-
-function displayFlashcard(index) {
-    const flashcardContainer = document.getElementById("flashcardContainer");
-    flashcardContainer.innerHTML = "";
-    if (flashcards.length > 0) {
-        const flashcard = flashcards[index];
-        const card = document.createElement("div");
-        card.classList.add("flashcard");
-
-        const front = document.createElement("div");
-        front.classList.add("flashcard-face", "flashcard-front");
-        front.textContent = flashcard.question;
-
-        const back = document.createElement("div");
-        back.classList.add("flashcard-face", "flashcard-back");
-        back.textContent = flashcard.answer;
-
-        card.appendChild(front);
-        card.appendChild(back);
-
-        card.addEventListener("click", () => {
-            card.classList.toggle("is-flipped");
-        });
-
-        flashcardContainer.appendChild(card);
-    } else {
-        flashcardContainer.textContent = "No flashcards available.";
-    }
-}
-
-function previousCard() {
-    if (currentCardIndex > 0) {
-        currentCardIndex--;
-        displayFlashcard(currentCardIndex);
-    }
-}
-
-function nextCard() {
-    if (currentCardIndex < flashcards.length - 1) {
-        currentCardIndex++;
-        displayFlashcard(currentCardIndex);
-    }
-}
-
-function toggleView() {
-    const inputPage = document.getElementById("inputPage");
-    const flashcardPage = document.getElementById("flashcardPage");
-
-    if (isViewingCards) {
-        inputPage.style.display = "block";
-        flashcardPage.style.display = "none";
-    } else {
-        inputPage.style.display = "none";
-        flashcardPage.style.display = "block";
-        displayFlashcard(currentCardIndex);
-    }
-    isViewingCards = !isViewingCards;
-}
-
-// Initial call to display the first flashcard
-if (flashcards.length > 0) {
-    displayFlashcard(currentCardIndex);
-}
-
-function loadProfile() {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    if (userInfo) {
-        document.getElementById("profileEmail").textContent = userInfo.email;
-        document.getElementById("profileName").textContent = userInfo.firstName + ' ' + userInfo.lastName;
-        document.getElementById("profileMobileNumber").textContent = userInfo.phoneNumber;
-        document.getElementById("profileAddress").textContent = userInfo.address+ ', ' +userInfo.state + ', ' + userInfo.postcode;
-    }
-}
-
-function toggleEditProfile() {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    if (userInfo) {
-        document.getElementById("editEmail").value = userInfo.email;
-        document.getElementById("editFirstName").value = userInfo.firstName;
-        document.getElementById("editLastName").value = userInfo.lastName;
-        document.getElementById("editPassword").value = userInfo.password;
-        document.getElementById("editMobileNumber").value = userInfo.phoneNumber;
-        document.getElementById("editAddress").value = userInfo.address;
-        document.getElementById("editPostcode").value = userInfo.postcode;
-    }
-    document.getElementById("userProfilePage").style.display = "none";
-    document.getElementById("editProfilePage").style.display = "block";
-}
-
-document.getElementById("editProfileForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    $("#editProfileForm").validate({
-        rules: {
-            email: {
-                required: true,
-                email: true
-            },
-            password: {
-                required: true,
-                minlength: 6 // Minimum password length
-            },
-            firstName: {
-                required: true
-            },
-            lastName: {
-                required: true
-            },
-            phoneNumber: {
-                required: true,
-                digits: true // Only allow digits
-            },
-            address: {
-                required: true
-            },
-            postcode: {
-                required: true,
-                digits: true // Only allow digits
+    
+    function deleteFlashcard() {
+        if (confirm('Are you sure you want to delete this flashcard?')) {
+            flashcards.splice(currentCardIndex, 1);
+            localStorage.setItem('flashcards', JSON.stringify(flashcards));
+            if (flashcards.length === 0) {
+                alert('No cards available');
+            } else {
+                currentCardIndex = currentCardIndex > 0 ? currentCardIndex - 1 : 0;
+                showPage(currentCardIndex);
             }
-        },
-    });
-    const updatedProfile = {
-        firstName: document.getElementById("editFirstName").value,
-        lastName: document.getElementById("editLastName").value,
-        password: document.getElementById("editPassword").value,
-        phoneNumber: document.getElementById("editMobileNumber").value,
-        address: document.getElementById("editAddress").value,
-        postcode: document.getElementById("editPostcode").value
-    };
-    localStorage.setItem("profile", JSON.stringify(updatedProfile));
-    loadProfile();
-    toggleProfileView();
-});
-
-function toggleProfileView() {
-    document.getElementById("userProfilePage").style.display = "block";
-    document.getElementById("editProfilePage").style.display = "none";
-}
-
-function deleteAccount() {
-    if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-        localStorage.removeItem("userInfo");
-        loadProfile();
-    }
-}
-
-// Initial call to load the profile data
-loadProfile();
-
-
-function deleteFlashcard() {
-    if (confirm('Are you sure you want to delete this flashcard?')) {
-        flashcards.splice(currentCardIndex, 1);
-        localStorage.setItem('flashcards', JSON.stringify(flashcards));
-        if (flashcards.length === 0) {
-            alert('No cards available');
-        } else {
-            currentCardIndex = currentCardIndex > 0 ? currentCardIndex - 1 : 0;
-            showPage(currentCardIndex);
         }
     }
-}
-function editFlashcard() {
-    const question = prompt('Edit the question:', flashcards[currentCardIndex].question);
-    const answer = prompt('Edit the answer:', flashcards[currentCardIndex].answer);
+    function editFlashcard() {
+        const question = prompt('Edit the question:', flashcards[currentCardIndex].question);
+        const answer = prompt('Edit the answer:', flashcards[currentCardIndex].answer);
 
-    if (question !== null && answer !== null) {
-        flashcards[currentCardIndex].question = question;
-        flashcards[currentCardIndex].answer = answer;
-        localStorage.setItem('flashcards', JSON.stringify(flashcards));
-        showPage(currentCardIndex);
-        window.location.reload(true);
+        if (question !== null && answer !== null) {
+            flashcards[currentCardIndex].question = question;
+            flashcards[currentCardIndex].answer = answer;
+            localStorage.setItem('flashcards', JSON.stringify(flashcards));
+            showPage(currentCardIndex);
+            window.location.reload(true);
+        }
+        else{
+            alert('No cards available');
+        }
     }
-    else{
-        alert('No cards available');
+
+    
+    function previousCard() {
+        if (currentCardIndex > 0) {
+            currentCardIndex--;
+            displayFlashcard(currentCardIndex);
+        }
     }
-}
+
+    function nextCard() {
+        if (currentCardIndex < flashcards.length - 1) {
+            currentCardIndex++;
+            displayFlashcard(currentCardIndex);
+        }
+    }
+
+    function toggleView() {
+        const inputPage = document.getElementById("inputPage");
+        const flashcardPage = document.getElementById("flashcardPage");
+
+        if (isViewingCards) {
+            inputPage.style.display = "block";
+            flashcardPage.style.display = "none";
+        } else {
+            inputPage.style.display = "none";
+            flashcardPage.style.display = "block";
+            displayFlashcard(currentCardIndex);
+        }
+        isViewingCards = !isViewingCards;
+    }
+
+    // Initial call to display the first flashcard
+    if (flashcards.length > 0) {
+        displayFlashcard(currentCardIndex);
+    }

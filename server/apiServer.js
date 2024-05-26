@@ -47,7 +47,7 @@ app.post('/verifyUser', (req, res) => {
 		    console.log(JSON.stringify(user) + " have been retrieved.\n");
 			if (user.length > 0) {
 				currentUser = user[0]; //Storing logged user in the currentUser
-				console.log(JSON.stringify(currentUser));
+				console.log("Current user: " + JSON.stringify(currentUser));
 				res.status(200).send(user);
 			} else {
 				res.status(401).send("Invalid email or password.");
@@ -87,60 +87,38 @@ app.post('/registerUser', (req, res) => {
 	});
 });
 
-app.get('/getOrderData', (req, res) => {
-	console.log("GET request received : " + JSON.stringify(req.body)); 
-	
-	if (!currentUser) {
-        return res.status(401).json({ error: "User not authenticated" });
+app.get('/getCurrentUser', (req, res) => {
+    console.log("GET request received for getCurrentUser");
+    if (currentUser) {
+        const currentUserString = JSON.stringify(currentUser);
+        res.status(200).send(currentUserString);
+        //console.log("currentUser sent:", currentUserString);
+    } else {
+        res.status(401).send("No user is currently logged in.");
+        console.log("No user is currently logged in.");
     }
-
-    const { firstName, lastName } = currentUser;
-
-	cardCollection.find({customerfName: firstName, customerlName: lastName}, {projection:{_id:0}}).toArray( function(err, docs) {
-		if(err) {
-			console.log("Some error.. " + err + "\n");
-		} else {
-			console.log( JSON.stringify(docs) + " have been retrieved.\n");
-			res.json(docs);
-		}
-	});
 });
+  
+// Endpoint to update the current user's details
+app.put('/updateUser', (req, res) => {
+	if (!currentUser) {
+		res.status(401).send("No user is currently logged in.");
+		return;
+	}
 
-app.post('/postOrderData', function (req, res) {
-    
-    console.log("POST request received : " + JSON.stringify(req.body)); 
-
-    cardCollection.insertOne(req.body, function(err, result) {
+	const updatedData = req.body;
+	userCollection.updateOne({ email: currentUser.email }, { $set: updatedData }, function (err, result) {
 		if (err) {
-			console.log("Some error.. " + err + "\n");
-		}else {
-			console.log(JSON.stringify(req.body) + " have been uploaded\n"); 
-			res.send(JSON.stringify(req.body));
+		console.log("Some error.. " + err + "\n");
+		res.status(500).send("Error updating user.");
+		} else {
+		console.log(JSON.stringify(updatedData) + " have been updated\n");
+		// Update currentUser with new data
+		Object.assign(currentUser, updatedData);
+		res.status(200).send(currentUser);
 		}
 	});
 });
-
-app.delete('/deleteOrders', (req, res) => {
-
-	console.log("DELETE request received : from " + JSON.stringify(currentUser)); 
-    
-	if (!currentUser) {
-        return res.status(401).json({ error: "User not authenticated" });
-    }
-
-    const { firstName, lastName } = currentUser;
-    cardCollection.deleteMany({ customerfName: firstName, customerlName: lastName })
-        .then(result => {
-            const deletedOrdersCount = result.deletedCount; // Defining deletedOrdersCount 
-            console.log(firstName + " " + lastName + "'s " + deletedOrdersCount + " orders deleted\n");
-            res.json({ deletedOrdersCount: deletedOrdersCount });
-        })
-        .catch(error => {
-            console.error("Error deleting user orders:", error);
-            res.status(500).json({ error: "An error occurred while deleting orders" });
-        });
-});
-
 
   
 app.listen(port, () => {
