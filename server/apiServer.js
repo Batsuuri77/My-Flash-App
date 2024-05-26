@@ -33,21 +33,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.get('/getUserDataTest', (req, res) => {
-
-	userCollection.find({}, {projection:{_id:0}}).toArray( function(err,docs) {
-		if(err) {
-		  console.log("Some error.. " + err + "\n");
-		} else {
-		   console.log( JSON.stringify(docs) + " have been retrieved.\n");
-		   var str = "<h1>" + JSON.stringify(docs) + "</h1>"
-		   str+= "<h1> Error: " +  err +  "</h1>"
-		   res.send(str); 
-		}
-	});
-
-});
-
 app.post('/verifyUser', (req, res) => {
 
 	loginData = req.body;
@@ -100,21 +85,6 @@ app.post('/registerUser', (req, res) => {
 				});
 			}
 	});
-});
-
-app.get('/getOrderDataTest', (req, res) => {
-
-	cardCollection.find({},{projection:{_id:0}}).toArray( function(err,docs) {
-		if(err) {
-		  console.log("Some error.. " + err + "\n");
-		} else {
-		   console.log( JSON.stringify(docs) + " have been retrieved.\n");
-		   var str = "<h1>" + JSON.stringify(docs) + "</h1>"
-		   str+= "<h1> Error: " +  err +  "</h1>"
-		   res.send(str); 
-		}
-	});
-
 });
 
 app.get('/getOrderData', (req, res) => {

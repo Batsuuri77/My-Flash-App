@@ -7,45 +7,45 @@ $(document).ready(function () {
 
 	localStorage.removeItem("allUsers");
 
-	if (!localStorage.allUsers) {
+	// if (!localStorage.allUsers) {
 	  
-		if (debug) alert("Users not found - creating a default user!");
+	// 	if (debug) alert("Users not found - creating a default user!");
 		
-		var userData = {email:"admin@domain.com",password:"admin",firstName:"CQU",lastName:"User",state:"QLD",phoneNumber:"0422919919", address:"700 Yamba Road", postcode:"4701"};
+	// 	var userData = {email:"admin@domain.com",password:"admin",firstName:"CQU",lastName:"User",state:"QLD",phoneNumber:"0422919919", address:"700 Yamba Road", postcode:"4701"};
 		
-		var allUsers = [];
-		allUsers.push(userData); 
+	// 	var allUsers = [];
+	// 	allUsers.push(userData); 
 		
-		if (debug) alert(JSON.stringify(allUsers));  
-		localStorage.setItem("allUsers", JSON.stringify(allUsers));
+	// 	if (debug) alert(JSON.stringify(allUsers));  
+	// 	localStorage.setItem("allUsers", JSON.stringify(allUsers));
 
-	} else {
+	// } else {
         
-		if (debug) alert("Names Array found-loading.."); 		
+	// 	if (debug) alert("Names Array found-loading.."); 		
 		
-		var allUsers = JSON.parse(localStorage.allUsers);    
-		if (debug) alert(JSON.stringify(allUsers));
-	} 
+	// 	var allUsers = JSON.parse(localStorage.allUsers);    
+	// 	if (debug) alert(JSON.stringify(allUsers));
+	// } 
 
-	if (!localStorage.allCards) {
+	// if (!localStorage.allCards) {
 	  
-		if (debug) alert("Cards not found");
+	// 	if (debug) alert("Cards not found");
 		
-		var cardData = {question:"What is my name", answer:"Vinay"};
+	// 	var cardData = {question:"What is my name", answer:"Vinay"};
 		
-		var allCards = [];
-		allCards.push(cardData); 
+	// 	var allCards = [];
+	// 	allCards.push(cardData); 
 		
-		if (debug) alert(JSON.stringify(allCards));  
-		localStorage.setItem("allCards", JSON.stringify(allCards));
+	// 	if (debug) alert(JSON.stringify(allCards));  
+	// 	localStorage.setItem("allCards", JSON.stringify(allCards));
 
-	} else {
+	// } else {
         
-		if (debug) alert("Names Array found-loading.."); 		
+	// 	if (debug) alert("Names Array found-loading.."); 		
 		
-		var allCards = JSON.parse(localStorage.allCards);    
-		if (debug) alert(JSON.stringify(allCards));
-	} 
+	// 	var allCards = JSON.parse(localStorage.allCards);    
+	// 	if (debug) alert(JSON.stringify(allCards));
+	// } 
 
 
 	/**
@@ -53,34 +53,8 @@ $(document).ready(function () {
 	**/
 	
 	$('#loginButton').click(function () {
-
-		localStorage.removeItem("inputData")
-
 		$("#loginForm").submit();
-
-		if (localStorage.inputData != null) {
-
-			var inputData = JSON.parse(localStorage.getItem("inputData"));
-
-			$.post("http://localhost:3000/verifyUser", inputData,  function(data, status){
-					if (debug) alert("Data received: " + JSON.stringify(data));
-					if (debug) alert("\nStatus: " + status);
-				
-				if (data.length > 0) {
-					alert("Login success");
-					authenticated = true;
-					localStorage.setItem("userInfo", JSON.stringify(data[0]));	
-					$.mobile.changePage("#homePage");
-				} 
-				else {
-					alert("Login failed");
-				}
-
-				$("#loginForm").trigger('reset');	
-			})
-		}
-		
-	})
+    });
 
 
 	$("#loginForm").validate({ // JQuery validation plugin
@@ -97,6 +71,22 @@ $(document).ready(function () {
 
 			localStorage.setItem("inputData", JSON.stringify(inputData));		
 
+            $.post("http://localhost:3000/verifyUser", inputData, function(data, status) {
+                if (debug) alert("Data received: " + JSON.stringify(data));
+                if (debug) alert("\nStatus: " + status);
+
+                if (data.length > 0) {
+                    alert("Login success");
+                    localStorage.setItem("userInfo", JSON.stringify(data[0]));
+                    $.mobile.changePage("#homePage");
+                } else {
+                    alert("Login failed: Incorrect email or password");
+                }
+
+                $("#loginForm").trigger('reset');
+            }).fail(function() {
+                alert("An error occurred while verifying the user. Please try again later.");
+            });
 		},
 		/* Validation rules */
 		rules: {
@@ -127,42 +117,47 @@ $(document).ready(function () {
 	--------------------------end--------------------------
 	**/	
         // Event handler for Sign-up form submission
-    $('#signupForm').submit(function (e) {
-        e.preventDefault(); // Prevent default form submission
-        
-        // Validate the form using jQuery Validation plugin
-        if ($(this).valid()) {
-            var inputData = {
-                email: $('#email').val(),
-                password: $('#password').val(),
-                firstName: $('#firstName').val(),
-                lastName: $('#lastName').val(),
-                state: $('#state').val(),
-                phoneNumber: $('#phoneNumber').val(),
-                address: $('#address').val(),
-                postcode: $('#postcode').val()
-            };
-
-            var allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-            var existingUser = allUsers.find(user => user.email === inputData.email);
-
-            if (existingUser) {
-                alert("User already exists! Please use a different email.");
-            } else {
-                allUsers.push(inputData);
-                localStorage.setItem("allUsers", JSON.stringify(allUsers));
-                alert("Sign up successful! You can now log in.");
-                $.mobile.changePage("#loginPage");
-            }
-            loadProfile();
-            $("#signupForm")[0].reset(); // Reset the form
-        }
+    $('#signupButton').on('click', () => {
+        $("#signupForm").submit();
     });
-
-    
 
     // Initialize form validation rules using jQuery Validation plugin
     $("#signupForm").validate({
+
+        focusInvalid: false,
+			onkeyup: false,
+			submitHandler: function (form) {
+
+				var formData = $(form).serializeArray();
+				var userData = {};
+
+				formData.forEach(function (data) {
+					userData[data.name] = data.value;
+				});
+
+				if (debug) alert(JSON.stringify(userData));
+
+				localStorage.setItem("userData", JSON.stringify(userData));
+
+                $.post("http://localhost:3000/registerUser", userData)
+                .done(function (data, status, xhr) {
+                    if (debug) alert("Data sent: " + JSON.stringify(data));
+                    if (debug) alert("\nStatus: " + status);
+                    alert("Signing up successfully!");
+                    $("#signupForm").trigger('reset');
+
+                    $.mobile.changePage("#loginPage");
+                })
+                .fail(function (xhr, status, error) {
+                    if (xhr.status === 409) {
+                        alert("User already exists. Please use a different email.");
+                    } else {
+                        alert("An error occurred: " + error);
+                    }
+                    $("#signupForm").trigger('reset');
+                });
+			},
+
         rules: {
             email: {
                 required: true,
@@ -225,9 +220,6 @@ $(document).ready(function () {
         }
     });
 });
-
-
-
 
 function openNav() {
   document.getElementById("mySidenav").style.width = "250px";
