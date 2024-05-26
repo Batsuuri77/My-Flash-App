@@ -54,39 +54,40 @@ $(document).ready(function () {
 	
 	$('#loginButton').click(function () {
 
-		localStorage.removeItem("inputData");
+		localStorage.removeItem("inputData")
 
 		$("#loginForm").submit();
 
 		if (localStorage.inputData != null) {
 
 			var inputData = JSON.parse(localStorage.getItem("inputData"));
-			var allUsers = JSON.parse(localStorage.getItem("allUsers"));	
 
-			allUsers.forEach(function(userData){		
-			
-				if (inputData.email == userData.email && inputData.password == userData.password) {
-					authenticated = true;
+			$.post("http://localhost:3000/verifyUser", inputData,  function(data, status){
+					if (debug) alert("Data received: " + JSON.stringify(data));
+					if (debug) alert("\nStatus: " + status);
+				
+				if (data.length > 0) {
 					alert("Login success");
-					localStorage.setItem("userInfo", JSON.stringify(userData));
+					authenticated = true;
+					localStorage.setItem("userInfo", JSON.stringify(data[0]));	
 					$.mobile.changePage("#homePage");
 				} 
-			}); 	
-			
-			if (authenticated == false){
-				alert("Login failed");
-			}
+				else {
+					alert("Login failed");
+				}
 
-			$("#loginForm").trigger('reset');
-		}	
+				$("#loginForm").trigger('reset');	
+			})
+		}
+		
 	})
 
-	
 
-	 $("#loginForm").validate({// JQuery validation plugin
+	$("#loginForm").validate({ // JQuery validation plugin
 		focusInvalid: false,  
 		onkeyup: false,
 		submitHandler: function (form) {   
+			authenticated = false;
 			
 			var formData =$(form).serializeArray();
 			var inputData = {};
@@ -95,6 +96,7 @@ $(document).ready(function () {
 			})
 
 			localStorage.setItem("inputData", JSON.stringify(inputData));		
+
 		},
 		/* Validation rules */
 		rules: {
@@ -110,21 +112,21 @@ $(document).ready(function () {
 		/* Validation message */
 		messages: {
 			email: {
-				required: "Please enter your email",
-				email: "The email format is incorrect"
+				required: "please enter your email",
+				email: "The email format is incorrect  "
 			},
 			password: {
-				required: "Password cannot be empty",
+				required: "It cannot be empty",
 				rangelength: $.validator.format("Minimum Password Length:{0}, Maximum Password Length:{1}。")
 
 			}
 		},
-	});
+	})
+    
 	/**
 	--------------------------end--------------------------
 	**/	
-$(document).ready(function () {
-    // Event handler for Sign-up form submission
+        // Event handler for Sign-up form submission
     $('#signupForm').submit(function (e) {
         e.preventDefault(); // Prevent default form submission
         
@@ -157,7 +159,7 @@ $(document).ready(function () {
         }
     });
 
-	
+    
 
     // Initialize form validation rules using jQuery Validation plugin
     $("#signupForm").validate({
@@ -222,11 +224,6 @@ $(document).ready(function () {
             }
         }
     });
-	
-});
-
-
-      
 });
 
 

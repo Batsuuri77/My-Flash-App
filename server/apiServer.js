@@ -12,23 +12,22 @@ app.use(cors());
 let currentUser = null; //Declaring current user for storing it after login success.
 
 const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://kaluulak33:JLXcfDvogqhvRtFH@cluster0.mpwzxoc.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://12230726:12230726@cluster0.arkh66z.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 // Global for general use
 var userCollection;
-var orderCollection;
+var cardCollection;
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 client.connect(err => {
-   userCollection = client.db("giftdelivery").collection("users");
-   orderCollection = client.db("giftdelivery").collection("orders");
+   userCollection = client.db("MyFlipCard").collection("users");
+   cardCollection = client.db("MyFlipCard").collection("userFlipCard");
   // perform actions on the collection object
   console.log ('Database up!\n')
 });
-
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -105,7 +104,7 @@ app.post('/registerUser', (req, res) => {
 
 app.get('/getOrderDataTest', (req, res) => {
 
-	orderCollection.find({},{projection:{_id:0}}).toArray( function(err,docs) {
+	cardCollection.find({},{projection:{_id:0}}).toArray( function(err,docs) {
 		if(err) {
 		  console.log("Some error.. " + err + "\n");
 		} else {
@@ -127,7 +126,7 @@ app.get('/getOrderData', (req, res) => {
 
     const { firstName, lastName } = currentUser;
 
-	orderCollection.find({customerfName: firstName, customerlName: lastName}, {projection:{_id:0}}).toArray( function(err, docs) {
+	cardCollection.find({customerfName: firstName, customerlName: lastName}, {projection:{_id:0}}).toArray( function(err, docs) {
 		if(err) {
 			console.log("Some error.. " + err + "\n");
 		} else {
@@ -141,7 +140,7 @@ app.post('/postOrderData', function (req, res) {
     
     console.log("POST request received : " + JSON.stringify(req.body)); 
 
-    orderCollection.insertOne(req.body, function(err, result) {
+    cardCollection.insertOne(req.body, function(err, result) {
 		if (err) {
 			console.log("Some error.. " + err + "\n");
 		}else {
@@ -160,7 +159,7 @@ app.delete('/deleteOrders', (req, res) => {
     }
 
     const { firstName, lastName } = currentUser;
-    orderCollection.deleteMany({ customerfName: firstName, customerlName: lastName })
+    cardCollection.deleteMany({ customerfName: firstName, customerlName: lastName })
         .then(result => {
             const deletedOrdersCount = result.deletedCount; // Defining deletedOrdersCount 
             console.log(firstName + " " + lastName + "'s " + deletedOrdersCount + " orders deleted\n");
@@ -175,5 +174,5 @@ app.delete('/deleteOrders', (req, res) => {
 
   
 app.listen(port, () => {
-  console.log(`Gift delivery app listening at http://localhost:${port}`) 
+  console.log(`MyFlashCard app listening at http://localhost:${port}`) 
 });
