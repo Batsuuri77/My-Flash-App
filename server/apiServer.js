@@ -120,7 +120,69 @@ app.put('/updateUser', (req, res) => {
 	});
 });
 
-  
+app.get('/getCard', (req, res) => {
+	console.log("POST request received : " + JSON.stringify(req.body)); 
+    
+	//Validating repetition of register user data by it's email and name  
+	cardCollection.findOne({ 
+		_id: req.body._id, 
+		}, function(err, existingUser) {
+			if (err) {
+				console.log("Error checking user existence: " + err);
+				res.status(500).send("Error checking user.");
+			} else if (existingUser) {
+				console.log("User already exists:", existingUser);
+				res.status(409).send("User already exists.");
+			} else {
+				req.body.phoneNumber = parseInt(req.body.phoneNumber); //Parsing phoneNumber String to int. to store as an integer
+				//insert new user's data to users collection.
+				userCollection.insertOne(req.body, function(err, result) {
+					if (err) {
+						console.log("Some error.. " + err + "\n");
+						res.status(500).send("Error registering user.");
+					}else {
+						console.log(JSON.stringify(req.body) + " have been uploaded\n"); 
+						res.send(JSON.stringify(req.body))
+					}
+				});
+			}
+	});
+});
+
+app.post('/postCard', (req, res) => {
+	if (!currentUser) {
+        return res.status(401).send("No user is currently logged in.");
+    }
+    const userName = `${currentUser.firstName} ${currentUser.lastName}`;
+    const cardData = {
+        userName: userName,
+        subject: req.body.subject,
+        question: req.body.question,
+        answer: req.body.answer,
+        cardType: req.body.cardType
+    };
+
+    console.log("POST request received: " + JSON.stringify(cardData));
+
+    cardCollection.insertOne(cardData, function(err, result) {
+        if (err) {
+            console.log("Error occurred: " + err);
+            res.status(500).json({ error: "An error occurred while saving the flashcard." });
+        } else {
+            console.log("Flashcard saved: " + JSON.stringify(cardData));
+            res.status(200).json(cardData);
+        }
+    });
+});
+
+app.put('/updateCard', (req, res) => {
+	//
+});
+
+app.delete('/deleteCard', (req, res) => {
+	//
+});
+
 app.listen(port, () => {
   console.log(`MyFlashCard app listening at http://localhost:${port}`) 
 });
