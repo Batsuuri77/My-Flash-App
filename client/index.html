@@ -230,7 +230,7 @@
 						<option value="private">Private</option>
 					</select><br><br>
 					<button type="button" id="saveCardBtn"  class="ui-btn ui-shadow ui-corner-all ui-btn-d">Save Flashcard</button>
-					<button onclick="toggleView()"  class="ui-btn ui-shadow ui-corner-all ui-btn-c">View Flashcards</button>
+					<a href="#libraryPage" class="ui-btn ui-shadow ui-corner-all ui-btn-c">My cards</a>
 				</form>
 			</div>
 		</div>
@@ -244,7 +244,7 @@
 		<!------------------------Header---------------------------->
 			<div data-role="header" class="header" data-theme="d" data-position="fixed">
 				<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
-				<h1>My-Flash-Card</h1>
+				<h1>MyFlashCard</h1>
 			</div>
 		<!------------------------Main content---------------------------->
 		<div class="wrap home">
@@ -263,7 +263,7 @@
 			</div>
 			<div id="homeBtn" class="btn-container">
 				<a href="#addNewCard" id="addNewCardBtn" class="ui-btn ui-shadow ui-corner-all ui-btn-d">Add new card</a>
-				<a href="#library" id="libraryBtn" class="ui-btn ui-shadow ui-corner-all ui-btn-c">Library</a>
+				<a href="#libraryPage" id="libraryBtn" class="ui-btn ui-shadow ui-corner-all ui-btn-c">Library</a>
 			</div>
 		</div>
 		<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
@@ -272,7 +272,7 @@
 	</div>
 
 	<!------------------------FlashCard page---------------------------->
-	<div data-role="page" id="flashcardPage">
+	<div data-role="page" id="libraryPage">
 		<!-- Header -->
 		<div data-role="header" class="header" data-theme="d" data-position="fixed">
 			<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
@@ -280,13 +280,51 @@
 			<a href="#homePage" class="ui-btn ui-btn-icon-left ui-icon-home ui-btn-icon-notext ui-corner-all">home</a>
 		</div>
 		<!-- Main content -->
-		<div id="flashcardContainer" class="flashcard-container"></div>
-        <div class="navigation">
-				<img src="img/backward.png" class="b1" onclick="previousCard()">
-				<img src="img/edit.png" class="e1" onclick="editFlashcard()">
-				<img src="img/delete.png" class="d1" onclick="deleteFlashcard()">
-				<img src="img/forward.png" class="f1" onclick="nextCard()">
-    	</div>
+		<div class="wrap library">
+			<h3>My cards</h3>
+			<div id="flashcardContainer" class="flashcard-container">
+			</div><br>
+			<div class="navigation"></div>
+		</div>
+		<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
+			<p>Copyright © My-Flash-Card 2024</p>
+		</div>
 	</div>
+
+	<!------------------------Edit flash card page---------------------------->
+	<div data-role="page" id="editFlashCard">
+		<!-- Header -->
+		<div data-role="header" class="header" data-theme="d" data-position="fixed">
+			<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
+			<h1>Edit card</h1>
+			<a href="#homePage" class="ui-btn ui-btn-icon-left ui-icon-home ui-btn-icon-notext ui-corner-all">home</a>
+		</div>
+		<!-- Main content -->
+		<div data-role="content" id="content">
+			<div class="wrap edieditFlashCardtPage">
+				<h3>Edit card</h3>
+				<form id="editCardForm" class="container">
+					<label for="subject">Create a new subject</label>
+					<input type="text" id="subjectEdited" name="subject" required><br>
+					<label for="question">Insert a question</label>
+					<input type="text" id="questionEdited" name="question" required><br>
+					<label for="answer">Insert an answer</label>
+					<textarea type="text" id="answerEdited" name="answer" required></textarea><br>
+					<input type="hidden" id="cardIdEdited" name="cardId" value="">
+					<label for="cardType">Choose a card type</label>
+					<select name="cardType" id="cardTypeEdited">
+						<option value="public">Public</option>
+						<option value="private">Private</option>
+					</select><br><br>
+					<button type="button" id="saveCardBtn"  class="ui-btn ui-shadow ui-corner-all ui-btn-d">Save Flashcard</button>
+					<a href="#libraryPage" class="ui-btn ui-shadow ui-corner-all ui-btn-c">My cards</a>
+				</form>
+			</div>
+		</div>
+		<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
+			<p>Copyright © My-Flash-Card 2024</p>
+		</div>
+	</div>
+
 </body>
 </html>
