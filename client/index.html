@@ -25,9 +25,9 @@
 	<div id="mySidenav" class="sidenav">
 		<a href="#" onclick="closeNav()">Close Menu</a>
 		<a href="#userProfilePage" onclick="closeNav()">Profile</a>
-		<a href="#libraryPage" onclick="closeNav()">My-Flash-Cards</a>
-		<a href="#homePage" onclick="closeNav()">My-Flash-Cards</a>
-		<a href="#addNewCard" onclick="closeNav()">ADD NEW CARD</a>
+		<a href="#homePage" onclick="closeNav()">Home</a>
+		<a href="#libraryPage" onclick="closeNav()">My cards</a>
+		<a href="#addNewCard" onclick="closeNav()">Add new card</a>
 		<a href="#contactPage" onclick="closeNav()">Contact</a>
 		<a href="#loginPage" onclick="closeNav()">Logout</a>
 	</div>
@@ -199,28 +199,31 @@
 	<!------------------------Add new card page---------------------------->
 	<div data-role="page" id="addNewCard">
 		<!------------------------Header---------------------------->
-			<div data-role="header" class="header" data-theme="d" data-position="fixed">
-				<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
-				<h1>My-Flash-Card</h1>
-			</div>
+		<div data-role="header" class="header" data-theme="d" data-position="fixed">
+			<a rel="external" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all" onclick="openNav()"></a>
+			<h1>ADD NEW CARD</h1>
+			<a href="#homePage" class="ui-btn ui-btn-icon-left ui-icon-home ui-btn-icon-notext ui-corner-all">home</a>
+		</div>
 		<!------------------------Main content---------------------------->
-		<div class="wrap">
-			<h3>ADD NEW CARD</h3>
-			<form id="flashcardForm" class="container">
-				<label for="subject">Create a new subject</label>
-				<input type="text" id="subject" name="subject" required><br>
-				<label for="question">Insert a question</label>
-				<input type="text" id="question" name="question" required><br>
-				<label for="answer">Insert an answer</label>
-				<textarea type="text" id="answer" name="answer" required></textarea><br>
-				<label for="cardType">Choose a card type</label>
-				<select name="cardType" id="cardType">
-					<option value="public">Public</option>
-					<option value="private">Private</option>
-				</select><br><br>
-				<button type="button" id="saveCardBtn"  class="ui-btn ui-shadow ui-corner-all ui-btn-d">Save Flashcard</button>
-				<button onclick="toggleView()"  class="ui-btn ui-shadow ui-corner-all ui-btn-c">View Flashcards</button>
-			</form>
+		<div data-role="content" id="content">
+			<div class="wrap addNewCard">
+				<h3>ADD NEW CARD</h3>
+				<form id="flashcardForm" class="container">
+					<label for="subject">Create a new subject</label>
+					<input type="text" id="subject" name="subject" required><br>
+					<label for="question">Insert a question</label>
+					<input type="text" id="question" name="question" required><br>
+					<label for="answer">Insert an answer</label>
+					<textarea type="text" id="answer" name="answer" required></textarea><br>
+					<label for="cardType">Choose a card type</label>
+					<select name="cardType" id="cardType">
+						<option value="public">Public</option>
+						<option value="private">Private</option>
+					</select><br><br>
+					<button type="button" id="saveCardBtn"  class="ui-btn ui-shadow ui-corner-all ui-btn-d">Save Flashcard</button>
+					<button onclick="toggleView()"  class="ui-btn ui-shadow ui-corner-all ui-btn-c">View Flashcards</button>
+				</form>
+			</div>
 		</div>
 		<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">
 			<p>Copyright © My-Flash-Card 2024</p>
@@ -241,21 +244,17 @@
 				<div id="homeContent">
 					<div id="subjectBox1">
 						<span class="textcolor">Subject</span>
-						<div id="subjectBox">
-							<div id="subject"></div>
-							<div id="cardNumber"></div>
-							<div id="userName"></div>
-						</div>
+						<div id="subjectBoxContainer"></div>
 					</div><br>
 					<div id="cardBox1">
 						<span class="textcolor">Recent</span>
-						<div id="cardBox"></div><br>
+						<div id="cardBox" class="card-box"></div>
 					</div>
 				</div>
 			</div>
-			<div id="homeBtn">
-				<button id="addNewCard" class="ui-btn ui-shadow ui-corner-all ui-btn-d">Add new card</button>
-				<button id="Library" class="ui-btn ui-shadow ui-corner-all ui-btn-c">Library</button>
+			<div id="homeBtn" class="btn-container">
+				<a href="#addNewCard" id="addNewCardBtn" class="ui-btn ui-shadow ui-corner-all ui-btn-d">Add new card</a>
+				<a href="#library" id="libraryBtn" class="ui-btn ui-shadow ui-corner-all ui-btn-c">Library</a>
 			</div>
 		</div>
 		<div data-role="footer" data-theme="d" data-position="fixed" class="footer" style="text-align:center;">

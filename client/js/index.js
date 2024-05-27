@@ -458,10 +458,97 @@ $(document).ready(function () {
 	--------------------------end--------------------------
 	**/
 
+    /**
+	----------------------Event handler for home page----------------------
+	**/
+    $(document).on("pagecontainershow", function (event, ui) {
+        var page = ui.toPage[0].id;
+        if (page === "homePage") {
+            getFlashcardsBySubject();
+            getFlashcards();
+        }
+    });
+
+    function getFlashcardsBySubject() {
+        $.get("http://localhost:3000/getCardSubject", function(data, status) {
+            console.log("Data:", data);
+            console.log("Status:", status);
+            if (status === "success") {
+                $("#subjectBoxContainer").empty();
+                for (const subject in data.flashcardsBySubject) {
+                    const cardCount = data.flashcardsBySubject[subject];
+                    const userName = data.userName;
+                    const subjectBox = $("<div class='subjectBox'></div>");
+
+                    subjectBox.append("<div class='subject'>" + subject + "</div>");
+                    subjectBox.append("<div class='cardNumber'>" + cardCount + " cards." + "</div>");
+                    subjectBox.append("<div class='userName'>" + userName + "</div>");
+
+                    $("#subjectBoxContainer").append(subjectBox);
+                }
+            } else {
+                console.error("Error fetching flashcards:", status);
+            }
+        });
+    }
+
+    function getFlashcards() {
+    $.get("http://localhost:3000/getFlashcards", function(data, status) {
+        if (status === "success") {
+            $("#cardBox").empty();
+            data.flashcards.reverse().forEach(function(flashcard) {
+                if (flashcard.cardType === 'public') { // Only display public type flashcards
+                    const flashcardElement = $("<div class='flashcard'></div>");
+                    const answerDiv = $("<div class='answer'></div>").text(flashcard.answer);
+                    const questionDiv = $("<div class='question'></div>").text(flashcard.question);
+
+                    flashcardElement.addClass('flipped');
+                    questionDiv.hide();
+                    answerDiv.show();
+
+                    const isFlipped = localStorage.getItem(flashcard._id) === 'true';
+
+                    if (isFlipped) {
+                        flashcardElement.addClass('flipped');
+                        questionDiv.hide();
+                        answerDiv.show();
+                    } else {
+                        flashcardElement.removeClass('flipped');
+                        questionDiv.show();
+                        answerDiv.hide();
+                    }
+
+                    flashcardElement.on("click", function() {
+                        flashcardElement.toggleClass("flipped");
+                        const currentlyFlipped = flashcardElement.hasClass('flipped');
+
+                        if (currentlyFlipped) {
+                            questionDiv.hide();
+                            answerDiv.show();
+                        } else {
+                            questionDiv.show();
+                            answerDiv.hide();
+                        }
+
+                        localStorage.setItem(flashcard._id, currentlyFlipped);
+                    });
+
+                    flashcardElement.append(answerDiv);
+                    flashcardElement.append(questionDiv);
+
+                    $("#cardBox").append(flashcardElement);
+                }
+            });
+        } else {
+            console.error("Error fetching flashcards:", status);
+        }
+    });
+}
+    
     
 
-
 });
+
 
 
 function openNav() {
