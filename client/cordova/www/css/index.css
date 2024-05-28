@@ -1,0 +1,300 @@
+body,p,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,table,th,td,form,fieldset,legend,input,textarea,button,select,a{margin:0;padding:0;outline:none;}
+
+body{
+  font-family: Helvetica, Tahoma, Arial; 
+  background-color: #ffffff;
+}
+
+input::-webkit-input-placeholder{
+	color:#e1e1e1;
+	text-shadow:none;
+}
+
+div,ul,li,a,label,p,button{
+  margin:0;
+  padding:0;
+}
+
+ul, li { list-style:none;  }
+
+a,p{
+	text-shadow:none;	
+	text-decoration:none;
+	}
+  
+form div {
+	margin-top:10px;
+	position:relative
+}
+
+.fcolor{
+    color:#b6f1f1;
+}
+
+.textcolor{
+	color: #333333;
+}
+
+   
+.wrap{padding: 20px 10px; margin: 10px auto;max-width:414px;max-height:800px;overflow-x:hidden;border-radius:25px;background:#ffffff;}
+.wrap1{margin: 10px auto;max-width:750px;max-height:500px;overflow-x:hidden;border-radius:25px;background:#ffffff;}
+.wrap2{margin: 10px auto;max-width:800px;max-height:1100px;overflow-x:hidden;border-radius:10px;background:#f9fafa;
+	}
+
+.wrap.login {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	text-align: center;
+}
+
+.wrap.login img {
+	max-width: 70%;
+	margin-bottom: 20px;
+}
+
+
+/*Log in*/
+.login form{width:80%;margin:5px auto}
+.login form div input{width:100%;height:40px;line-height:20px;border:none;border-bottom:1px solid #aaaaaa;background:none;outline:none;box-shadow: none}
+#loginButton {
+    margin-top: 20px;
+}
+
+.wrap.signup {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	padding: 20px 0;
+	text-align: center;
+}
+.signup form{width:80%;margin:5px 0}
+.signup form div input{width:100%;height:40px;line-height:20px;border:none;border-bottom:1px solid #aaaaaa;background:none;outline:none;box-shadow: none}
+
+#signupButton{
+	margin-top: 20px;
+}
+
+
+.pb{padding-bottom:60px}
+
+.fb1{
+	color:#4bb3d3;
+	width: 100px;
+	height: 40px;
+	margin-left: 40%;
+}
+
+#profileInfo {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+    justify-content: center;
+    align-items: center;
+	gap: 15px;
+}
+
+.profile-table td {
+    padding: 10px;
+}
+
+/** Gift list*/
+.ilist li{position:relative; }
+.ilist li:nth-child(even){background-color:#f2f2f2}
+.ilist li a{display:block;height:90px;padding:10px;overflow:hidden}
+.ilist li img{height:86px;width:86px;vertical-align:top;padding:2px;background:white;box-shadow:0 0 0 1px #ddd;float:left}
+.ilist li div{width:calc(90% - 100px);height:90px;float:left;line-height:30px;margin-left:10px}
+.ilist li h3{height:30px;color:#000;font-size:16px}
+.ilist li p{height:30px;color:#666;font-size:14px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;word-break:break-all}
+.ilist li p span{color:#EC6941}
+
+
+.footer{
+	background-color:#0D6EFD;
+}
+
+.header{
+	background-color:#0D6EFD;
+}
+
+.sidenav {
+	height: auto;
+	width: 0;
+	border-radius: 0.5em;
+	position: fixed;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	background-color: #eceaea;
+	overflow-x: hidden;
+	transition: 0.5s;
+	padding-top: 60px;
+}
+  
+.sidenav a {
+	padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #333333;
+    display: block;
+    transition: 0.3s;
+}
+  
+.sidenav a:hover {
+	text-decoration: underline;
+	color: #000;
+	font-weight: bold;
+}
+  
+.sidenav .closebtn {
+	position: absolute;
+	top: 0;
+	right: 25px;
+	font-size: 36px;
+	margin-left: 50px;
+}
+  
+@media screen and (max-height: 450px) {
+.sidenav {padding-top: 15px;}
+.sidenav a {font-size: 18px;}
+}
+
+.t1{
+color:#2d0b9f;
+font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+text-align: center;
+}
+
+h3{
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	margin: 0px 20px;
+}
+
+.container label {
+	align-self: flex-start;
+}
+
+.container input, .container select, .container button {
+	width: 100%;
+}
+
+
+
+input, button, select {
+	width: 100%;
+	padding: 10px;
+}
+
+.flashcard-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 300px;
+	perspective: 1000px;
+}
+
+.flashcard {
+	width: 300px;
+	height: 200px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 18px;
+	cursor: pointer;
+	text-align: center;
+	padding: 20px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	position: relative;
+	transform-style: preserve-3d;
+	transition: transform 0.6s;
+}
+
+.flashcard.is-flipped {
+	transform: rotateY(180deg);
+}
+
+.flashcard > .flashcard-face {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	backface-visibility: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.flashcard > .flashcard-back {
+	transform: rotateY(180deg);
+}
+
+.navigation {
+	margin-top: 20px;
+	display: flex;
+	justify-content: center;
+}
+
+button {
+	padding: 10px;
+	margin: 0 10px;
+}
+
+.b1{
+	margin-left: 0%;
+	height: 50px;
+	width: 50px;
+	transition: 0.6s ease;
+	border-radius: 0 3px 3px 0;
+	user-select: none;
+}
+	.b1:hover, .e1:hover, .f1:hover {
+		background-color: rgba(156, 168, 253, 0.8);
+	  }
+
+.e1{
+	margin-left: 5%;
+	height: 50px;
+	width: 50px;
+	transition: 0.6s ease;
+	border-radius: 0 3px 3px 0;
+	user-select: none;
+}
+.d1{
+	margin-left: 5%;
+	height: 50px;
+	width: 50px;
+	transition: 0.6s ease;
+	border-radius: 0 3px 3px 0;
+	user-select: none;
+}
+.d1:hover {
+	background-color: rgba(254, 76, 76, 0.8);
+  }
+  .f1{
+	margin-left: 5%;
+	height: 50px;
+	width: 50px;
+	transition: 0.6s ease;
+	border-radius: 0 3px 3px 0;
+	user-select: none;
+}
+
+#loginForm label, #signupForm label {
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	justify-content: start;
+	color: #333333;
+}
+
