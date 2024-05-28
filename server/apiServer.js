@@ -18,16 +18,14 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 var userCollection;
 var cardCollection;
 
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 client.connect(err => {
    userCollection = client.db("MyFlipCard").collection("users");
    cardCollection = client.db("MyFlipCard").collection("userFlipCard");
   // perform actions on the collection object
   console.log ('Database up!\n')
 });
+
+const { ObjectId } = require('mongodb');
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -100,27 +98,186 @@ app.get('/getCurrentUser', (req, res) => {
 });
   
 // Endpoint to update the current user's details
-app.put('/updateUser', (req, res) => {
-	if (!currentUser) {
-		res.status(401).send("No user is currently logged in.");
-		return;
-	}
+app.put('/updateCard', (req, res) => {
+    if (!currentUser) {
+        return res.status(401).send("No user is currently logged in.");
+    }
 
-	const updatedData = req.body;
-	userCollection.updateOne({ email: currentUser.email }, { $set: updatedData }, function (err, result) {
+    const cardId = req.body.cardId;
+    const updatedData = {
+        question: req.body.question,
+        answer: req.body.answer,
+        cardType: req.body.cardType
+    };
+
+    const objectId = new require('mongodb').ObjectID(cardId);
+
+    cardCollection.updateOne({ _id: objectId, userId: currentUser._id }, { $set: updatedData }, function(err, result) {
+        if (err) {
+            console.log("Error updating card:", err);
+            return res.status(500).send({ error: "Error updating card." });
+        } else {
+            console.log("Card updated:", result);
+            return res.status(200).send({ message: "Card updated successfully." });
+        }
+    });
+});
+
+//Endpoint to get card data
+app.get('/getFlashcards', (req, res) => {
+	cardCollection.find({}).toArray((err, flashcards) => {
 		if (err) {
-		console.log("Some error.. " + err + "\n");
-		res.status(500).send("Error updating user.");
+			console.error("Error fetching flashcards:", err);
+			res.status(500).send("Error fetching flashcards from the database.");
 		} else {
-		console.log(JSON.stringify(updatedData) + " have been updated\n");
-		// Update currentUser with new data
-		Object.assign(currentUser, updatedData);
-		res.status(200).send(currentUser);
+			//console.log("Retrieved flashcards:", flashcards);
+			res.status(200).json({ flashcards: flashcards });
 		}
 	});
 });
 
-  
+//Retrieve flashcard by subject with total number and created user's name
+app.get('/getCardSubject', (req, res) => {
+    cardCollection.find({}).toArray(function(err, allFlashcards) {
+        if (err) {
+            console.log("Error retrieving flashcards:", err);
+            return res.status(500).send("Error retrieving flashcards.");
+        }
+
+        const flashcardsBySubject = {};
+        const usersBySubject = {};
+
+        allFlashcards.forEach(flashcard => {
+            if (!flashcardsBySubject[flashcard.subject]) {
+                flashcardsBySubject[flashcard.subject] = 0;
+            }
+            if (!usersBySubject[flashcard.subject]) {
+                usersBySubject[flashcard.subject] = [];
+            }
+            flashcardsBySubject[flashcard.subject]++;
+            usersBySubject[flashcard.subject].push(flashcard.userName);
+        });
+
+        const subjectData = [];
+        for (const subject in flashcardsBySubject) {
+            const cardCount = flashcardsBySubject[subject];
+            const users = usersBySubject[subject].join(', ');
+            subjectData.push({ subject, cardCount, users });
+        }
+
+        return res.status(200).json({ subjectData });
+    });
+});
+
+//Endpoint to add a new card 
+app.post('/postCard', (req, res) => {
+	if (!currentUser) {
+        return res.status(401).send("No user is currently logged in.");
+    }
+
+    const userName = `${currentUser.firstName} ${currentUser.lastName}`;
+    const cardData = {
+        userName: userName,
+        subject: req.body.subject,
+        question: req.body.question,
+        answer: req.body.answer,
+        cardType: req.body.cardType,
+		flipped: false
+    };
+
+    console.log("POST request received: " + JSON.stringify(cardData));
+
+    cardCollection.insertOne(cardData, function(err, result) {
+        if (err) {
+            console.log("Error occurred: " + err);
+            res.status(500).json({ error: "An error occurred while saving the flashcard." });
+        } else {
+            console.log("Flashcard saved: " + JSON.stringify(cardData));
+            res.status(200).json(cardData);
+        }
+    });
+});
+
+//Endpoint to get current user's flashcards
+app.get('/currentUserCards', (req, res) => {
+    if (!currentUser) {
+        res.status(401).send("No user is currently logged in.");
+        return;
+    }
+
+	const currentUserName = `${currentUser.firstName} ${currentUser.lastName}`;
+
+    cardCollection.find({ userName: currentUserName }).toArray(function(err, userFlashcards) {
+        if (err) {
+            console.log("Error retrieving user's flashcards:", err);
+            return res.status(500).send("Error retrieving user's flashcards.");
+        }
+
+        const userName = currentUser;
+        return res.status(200).json({ userFlashcards, userName });
+    });
+});
+
+//Endpoint to update current user's flashcards
+app.put('/updateCard', (req, res) => {
+    if (!currentUser) {
+        return res.status(401).send("No user is currently logged in.");
+    }
+
+    const cardId = req.body.cardId;
+    const updatedData = {
+        subject: req.body.subject,
+        question: req.body.question,
+        answer: req.body.answer,
+        cardType: req.body.cardType
+    };
+
+    console.log("Received update request with data:", req.body);
+
+    const objectId = new ObjectId(cardId);
+
+    cardCollection.updateOne({ _id: objectId, userId: currentUser._id }, { $set: updatedData }, (err, result) => {
+        if (err) {
+            console.log("Error updating card:", err);
+            return res.status(500).send({ error: "Error updating card." });
+        } else {
+            console.log("Card update result:", result);
+            if (result.modifiedCount === 0) {
+                console.log("No documents were updated. Check if the card ID and user ID match.");
+            }
+            console.log("Updated document:", updatedData);
+            return res.status(200).send({ message: "Card updated successfully." });
+        }
+    });
+});
+
+app.delete('/deleteCard', (req, res) => {
+    const cardId = req.query.cardId;
+
+    console.log("Received cardId in delete request:", cardId); // Debugging statement
+
+    // Validate cardId
+    if (!ObjectId.isValid(cardId)) {
+        console.error("Invalid card ID:", cardId); // Debugging statement
+        return res.status(400).send("Invalid card ID.");
+    }
+
+    const objectId = new ObjectId(cardId);
+
+    cardCollection.deleteOne({ _id: objectId, userId: currentUser._id }, function(err, result) {
+        if (err) {
+            console.error("Error deleting card:", err); // Debugging statement
+            return res.status(500).send("Error deleting card.");
+        } else if (result.deletedCount === 0) {
+            console.warn("Card not found or not deleted:", result); // Debugging statement
+            return res.status(404).send("Card not found or you do not have permission to delete this card.");
+        } else {
+            console.log("Card deleted:", result); // Debugging statement
+            return res.status(200).send("Card deleted successfully.");
+        }
+    });
+});
+
 app.listen(port, () => {
   console.log(`MyFlashCard app listening at http://localhost:${port}`) 
 });
