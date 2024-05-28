@@ -116,11 +116,6 @@ $(document).ready(function () {
 	/**
 	--------------------------end--------------------------
 	**/	
-
-    /**
-	----------------------Event handler for signing up----------------------
-	**/
-
         // Event handler for Sign-up form submission
     $('#signupButton').on('click', () => {
         $("#signupForm").submit();
@@ -225,61 +220,55 @@ $(document).ready(function () {
         }
     });
 
-    /**
-	--------------------------end--------------------------
-	**/
+    let flashcards = JSON.parse(localStorage.getItem("flashcards")) || [];
+    let currentCardIndex = 0;
+    let isViewingCards = false;
 
-    // let flashcards = JSON.parse(localStorage.getItem("flashcards")) || [];
-    // let currentCardIndex = 0;
-    // let isViewingCards = false;
+    document.getElementById("flashcardForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const question = document.getElementById("question").value;
+        const answer = document.getElementById("answer").value;
+        if (question.trim() !== "" && answer.trim() !== "") {
+            flashcards.push({ question, answer });
+            localStorage.setItem("flashcards", JSON.stringify(flashcards));
+            document.getElementById("question").value = "";
+            document.getElementById("answer").value = "";
+            alert("Flashcard saved successfully!");
+        } else {
+            alert("Please enter both question and answer.");
+        }
+    });
 
-    // document.getElementById("flashcardForm").addEventListener("submit", function(event) {
-    //     event.preventDefault();
-    //     const question = document.getElementById("question").value;
-    //     const answer = document.getElementById("answer").value;
-    //     if (question.trim() !== "" && answer.trim() !== "") {
-    //         flashcards.push({ question, answer });
-    //         localStorage.setItem("flashcards", JSON.stringify(flashcards));
-    //         document.getElementById("question").value = "";
-    //         document.getElementById("answer").value = "";
-    //         alert("Flashcard saved successfully!");
-    //     } else {
-    //         alert("Please enter both question and answer.");
-    //     }
-    // });
+    function displayFlashcard(index) {
+        const flashcardContainer = document.getElementById("flashcardContainer");
+        flashcardContainer.innerHTML = "";
+        if (flashcards.length > 0) {
+            const flashcard = flashcards[index];
+            const card = document.createElement("div");
+            card.classList.add("flashcard");
 
-    // function displayFlashcard(index) {
-    //     const flashcardContainer = document.getElementById("flashcardContainer");
-    //     flashcardContainer.innerHTML = "";
-    //     if (flashcards.length > 0) {
-    //         const flashcard = flashcards[index];
-    //         const card = document.createElement("div");
-    //         card.classList.add("flashcard");
+            const front = document.createElement("div");
+            front.classList.add("flashcard-face", "flashcard-front");
+            front.textContent = flashcard.question;
 
-    //         const front = document.createElement("div");
-    //         front.classList.add("flashcard-face", "flashcard-front");
-    //         front.textContent = flashcard.question;
+            const back = document.createElement("div");
+            back.classList.add("flashcard-face", "flashcard-back");
+            back.textContent = flashcard.answer;
 
-    //         const back = document.createElement("div");
-    //         back.classList.add("flashcard-face", "flashcard-back");
-    //         back.textContent = flashcard.answer;
+            card.appendChild(front);
+            card.appendChild(back);
 
-    //         card.appendChild(front);
-    //         card.appendChild(back);
+            card.addEventListener("click", () => {
+                card.classList.toggle("is-flipped");
+            });
 
-    //         card.addEventListener("click", () => {
-    //             card.classList.toggle("is-flipped");
-    //         });
+            flashcardContainer.appendChild(card);
+        } else {
+            flashcardContainer.textContent = "No flashcards available.";
+        }
+    }
 
-    //         flashcardContainer.appendChild(card);
-    //     } else {
-    //         flashcardContainer.textContent = "No flashcards available.";
-    //     }
-    // }
 
-    /**
-	----------------------Event handler for user profile----------------------
-	**/
     $(document).on("pagecontainershow", function (event, ui) {
         console.log("Page containers show event triggered.");
         var page = ui.toPage[0].id;
@@ -305,26 +294,19 @@ $(document).ready(function () {
             });
         }
     });
-    /**
-	--------------------------end--------------------------
-	**/
 
-
-    /**
-	----------------------Event handler for editing user profile----------------------
-	**/
     $("#saveProfileButton").on("click", function(event) {
-        event.preventDefault(); 
-        
-        var formData = $(form).serializeArray();
-        var updatedUser = {};
-
-        formData.forEach(function (data) {
-            updatedUser[data.name] = data.value;
-        });
-
-        if (debug) alert(JSON.stringify(updatedUser));
-
+        event.preventDefault(); // Prevent the default form submission
+        var updatedUser = {
+            firstName: $("#editFirstName").val(),
+            lastName: $("#editLastName").val(),
+            email: $("#editEmail").val(),
+            phoneNumber: $("#editPhonenumber").val(),
+            address: $("#editAddress").val(),
+            state: $("#state").val(),
+            postcode: $("#editPostcode").val(),
+            password: $("#editPassword").val()
+        };  
         $.ajax({
             url: "http://localhost:3000/updateUser",
             type: "PUT",
@@ -332,11 +314,13 @@ $(document).ready(function () {
             data: JSON.stringify(updatedUser),
             success: function(response) {
                 console.log("User updated successfully:", response);
-                alert(updatedUser.firstName + " " + updatedUser.lastName + "info updated successfully.");
+                // Redirect to the profile page or show a success message
+                // For example:
                 window.location.href = "#userProfilePage";
             },
             error: function(xhr, status, error) {
                 console.error("Error updating user:", error);
+                // Show an error message
                 alert("There was an error updating your profile. Please try again.");
             }
         });
@@ -388,6 +372,51 @@ $(document).ready(function () {
             });
         }
     });
+
+    $("#flashcardForm").validate({
+        submitHandler: function(form) {
+            $.ajax({
+                url: '/postCard', 
+                method: 'POST',
+                data: $(form).serialize(), 
+                success: function(response) {
+                    console.log("Flashcard saved successfully:", response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error saving flashcard:", error);
+                }
+            });
+        },
+
+        rules: {
+            subject: {
+                required: true
+            },
+            question: {
+                required: true
+            },
+            answer: {
+                required: true
+            }
+        },
+        messages: {
+            subject: {
+                required: "Please enter a subject"
+            },
+            question: {
+                required: "Please enter a question"
+            },
+            answer: {
+                required: "Please enter an answer"
+            }
+        }
+    });
+    
+    // Optionally, you can also trigger form submission when a button is clicked
+    $('#saveCardBtn').on('click', function() {
+        $("#flashcardForm").submit();
+    });
+
 });
 
 
@@ -400,65 +429,65 @@ document.getElementById("mySidenav").style.width = "0";
 }
 
     
-    function deleteFlashcard() {
-        if (confirm('Are you sure you want to delete this flashcard?')) {
-            flashcards.splice(currentCardIndex, 1);
-            localStorage.setItem('flashcards', JSON.stringify(flashcards));
-            if (flashcards.length === 0) {
-                alert('No cards available');
-            } else {
-                currentCardIndex = currentCardIndex > 0 ? currentCardIndex - 1 : 0;
-                showPage(currentCardIndex);
-            }
-        }
-    }
-    function editFlashcard() {
-        const question = prompt('Edit the question:', flashcards[currentCardIndex].question);
-        const answer = prompt('Edit the answer:', flashcards[currentCardIndex].answer);
-
-        if (question !== null && answer !== null) {
-            flashcards[currentCardIndex].question = question;
-            flashcards[currentCardIndex].answer = answer;
-            localStorage.setItem('flashcards', JSON.stringify(flashcards));
-            showPage(currentCardIndex);
-            window.location.reload(true);
-        }
-        else{
+function deleteFlashcard() {
+    if (confirm('Are you sure you want to delete this flashcard?')) {
+        flashcards.splice(currentCardIndex, 1);
+        localStorage.setItem('flashcards', JSON.stringify(flashcards));
+        if (flashcards.length === 0) {
             alert('No cards available');
-        }
-    }
-
-    
-    function previousCard() {
-        if (currentCardIndex > 0) {
-            currentCardIndex--;
-            displayFlashcard(currentCardIndex);
-        }
-    }
-
-    function nextCard() {
-        if (currentCardIndex < flashcards.length - 1) {
-            currentCardIndex++;
-            displayFlashcard(currentCardIndex);
-        }
-    }
-
-    function toggleView() {
-        const inputPage = document.getElementById("inputPage");
-        const flashcardPage = document.getElementById("flashcardPage");
-
-        if (isViewingCards) {
-            inputPage.style.display = "block";
-            flashcardPage.style.display = "none";
         } else {
-            inputPage.style.display = "none";
-            flashcardPage.style.display = "block";
-            displayFlashcard(currentCardIndex);
+            currentCardIndex = currentCardIndex > 0 ? currentCardIndex - 1 : 0;
+            showPage(currentCardIndex);
         }
-        isViewingCards = !isViewingCards;
     }
+}
+function editFlashcard() {
+    const question = prompt('Edit the question:', flashcards[currentCardIndex].question);
+    const answer = prompt('Edit the answer:', flashcards[currentCardIndex].answer);
 
-    // Initial call to display the first flashcard
-    if (flashcards.length > 0) {
+    if (question !== null && answer !== null) {
+        flashcards[currentCardIndex].question = question;
+        flashcards[currentCardIndex].answer = answer;
+        localStorage.setItem('flashcards', JSON.stringify(flashcards));
+        showPage(currentCardIndex);
+        window.location.reload(true);
+    }
+    else{
+        alert('No cards available');
+    }
+}
+
+
+function previousCard() {
+    if (currentCardIndex > 0) {
+        currentCardIndex--;
         displayFlashcard(currentCardIndex);
     }
+}
+
+function nextCard() {
+    if (currentCardIndex < flashcards.length - 1) {
+        currentCardIndex++;
+        displayFlashcard(currentCardIndex);
+    }
+}
+
+function toggleView() {
+    const inputPage = document.getElementById("inputPage");
+    const flashcardPage = document.getElementById("flashcardPage");
+
+    if (isViewingCards) {
+        inputPage.style.display = "block";
+        flashcardPage.style.display = "none";
+    } else {
+        inputPage.style.display = "none";
+        flashcardPage.style.display = "block";
+        displayFlashcard(currentCardIndex);
+    }
+    isViewingCards = !isViewingCards;
+}
+
+// Initial call to display the first flashcard
+if (flashcards.length > 0) {
+    displayFlashcard(currentCardIndex);
+}
