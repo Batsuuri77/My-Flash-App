@@ -145,17 +145,27 @@ app.get('/getCardSubject', (req, res) => {
         }
 
         const flashcardsBySubject = {};
-        let userName = '';
+        const usersBySubject = {};
 
         allFlashcards.forEach(flashcard => {
             if (!flashcardsBySubject[flashcard.subject]) {
                 flashcardsBySubject[flashcard.subject] = 0;
             }
+            if (!usersBySubject[flashcard.subject]) {
+                usersBySubject[flashcard.subject] = [];
+            }
             flashcardsBySubject[flashcard.subject]++;
-            userName = flashcard.userName; 
+            usersBySubject[flashcard.subject].push(flashcard.userName);
         });
 
-        return res.status(200).json({ flashcardsBySubject, userName });
+        const subjectData = [];
+        for (const subject in flashcardsBySubject) {
+            const cardCount = flashcardsBySubject[subject];
+            const users = usersBySubject[subject].join(', ');
+            subjectData.push({ subject, cardCount, users });
+        }
+
+        return res.status(200).json({ subjectData });
     });
 });
 

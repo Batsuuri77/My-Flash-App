@@ -475,17 +475,14 @@ $(document).ready(function () {
             console.log("Status:", status);
             if (status === "success") {
                 $("#subjectBoxContainer").empty();
-                for (const subject in data.flashcardsBySubject) {
-                    const cardCount = data.flashcardsBySubject[subject];
-                    const userName = data.userName;
+                data.subjectData.forEach(function(subjectInfo) {
                     const subjectBox = $("<div class='subjectBox'></div>");
-
-                    subjectBox.append("<div class='subject'>" + subject + "</div>");
-                    subjectBox.append("<div class='cardNumber'>" + cardCount + " cards." + "</div>");
-                    subjectBox.append("<div class='userName'>" + userName + "</div>");
-
+    
+                    subjectBox.append("<div class='subject'>" + subjectInfo.subject + "</div>");
+                    subjectBox.append("<div class='cardNumber'>" + subjectInfo.cardCount + " cards.</div>");
+                    subjectBox.append("<div class='userName'>" + subjectInfo.users + "</div>");
                     $("#subjectBoxContainer").append(subjectBox);
-                }
+                });
             } else {
                 console.error("Error fetching flashcards:", status);
             }
@@ -535,7 +532,6 @@ $(document).ready(function () {
 
                         flashcardElement.append(answerDiv);
                         flashcardElement.append(questionDiv);
-
                         $("#cardBox").append(flashcardElement);
                     }
                 });
